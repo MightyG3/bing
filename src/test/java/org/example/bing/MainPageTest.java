@@ -10,7 +10,6 @@ import java.time.Duration;
 
 public class MainPageTest {
     private WebDriver driver;
-
     @BeforeEach
     public void setUp() {
         ChromeOptions options = new ChromeOptions();
@@ -20,24 +19,18 @@ public class MainPageTest {
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driver.get("https://www.bing.com/");
-
-
     }
-
     @AfterEach
     public void tearDown() {
         driver.quit();
     }
-
     @Test
     public void search() {
         String input = "Google";
         WebElement searchField = driver.findElement(By.cssSelector("#sb_form_q"));
         searchField.sendKeys(input);
         searchField.submit();
-
-
         WebElement searchPageField = driver.findElement(By.cssSelector("#sb_form_q"));
-        assertEquals(input, searchPageField.getAttribute("value"));
+        assertEquals(input, searchPageField.getAttribute("value"), "Ошибка, не то слово");
     }
 }
