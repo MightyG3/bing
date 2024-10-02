@@ -3,12 +3,15 @@ package org.example.bing;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.RepeatedTest;
 import org.openqa.selenium.By;
+import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -28,9 +31,10 @@ public class MainPageTest {
         options.addArguments("--remote-allow-origins=*");
         //driver = new ChromeDriver(options);
         driver = new EdgeDriver(options);
+        options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driver.get("https://www.bing.com");
+
     }
 
     @AfterEach
@@ -39,20 +43,20 @@ public class MainPageTest {
     }
 
     @DisplayName("searchTest")
-    @Test
+    @RepeatedTest(5)
     public void search() {
         String input = "Selenium";
-        WebElement searchField = driver.findElement(searchBotton);
+        WebElement searchField = driver.findElement(searchButton);
         searchField.sendKeys(input);
         searchField.submit();
-        WebElement searchPageField = driver.findElement(searchBotton);
+        WebElement searchPageField = driver.findElement(searchButton);
         assertEquals(input, searchPageField.getAttribute("value"), "Ошибка, не то слово");
     }
-
-    By searchBotton = By.cssSelector("#sb_form_q");
-
-    public void clickElement(List<WebElement> results, int index) {
-        results.get(index).click();
+    By searchButton = By.cssSelector("#sb_form_q");
+    public void clickElement(List<WebElement> results, int index){
+        if (index >= 0 && index < results.size()) {
+            results.get(index).click();
+        }
     }
 
     public void switchToNewTab() {
@@ -63,16 +67,25 @@ public class MainPageTest {
     }
 
     @DisplayName("urlTest")
-    @Test
+    @RepeatedTest(5)
     public void site() {
         String input = "Selenium";
-        WebElement searchField = driver.findElement(searchBotton);
+        WebElement searchField = driver.findElement(searchButton);
         searchField.sendKeys(input);
         searchField.submit();
-        List<WebElement> links = driver.findElements(By.cssSelector("h2>a[href]"));
-        clickElement(links, 0);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.and(
+                ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(":not(.b_adurl) > cite"), "selenium.dev"),
+                ExpectedConditions.elementToBeClickable(By.cssSelector(":not(.b_adurl) > cite"))
+        ));
+        List<WebElement> results = driver.findElements(By.cssSelector(":not(.b_adurl) > cite"));
+        for (WebElement link : results) {
+            System.out.println("Link text: " + link.getText());
+        }
+        clickElement(results, 0);
         switchToNewTab();
         String currentUrl = driver.getCurrentUrl();
+        System.out.println("Текущий URL: " + currentUrl);
         assertTrue(currentUrl.contains("https://www.selenium.dev/"), "Ссылка не совпадает");
     }
 }
