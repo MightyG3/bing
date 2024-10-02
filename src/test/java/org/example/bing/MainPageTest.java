@@ -7,8 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-/*import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;*/
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 
@@ -21,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MainPageTest {
     private WebDriver driver;
+
     @BeforeEach
     public void setUp() {
         //ChromeOptions options =new ChromeOptions();
@@ -33,36 +32,46 @@ public class MainPageTest {
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driver.get("https://www.bing.com");
     }
+
     @AfterEach
     public void tearDown() {
         driver.quit();
     }
+
     @DisplayName("searchTest")
     @Test
     public void search() {
         String input = "Selenium";
-        WebElement searchField = driver.findElement(By.cssSelector("#sb_form_q"));
+        WebElement searchField = driver.findElement(searchBotton);
         searchField.sendKeys(input);
         searchField.submit();
-        WebElement searchPageField = driver.findElement(By.cssSelector("#sb_form_q"));
+        WebElement searchPageField = driver.findElement(searchBotton);
         assertEquals(input, searchPageField.getAttribute("value"), "Ошибка, не то слово");
     }
-    public void clickElement(List<WebElement> results, int index){
+
+    By searchBotton = By.cssSelector("#sb_form_q");
+
+    public void clickElement(List<WebElement> results, int index) {
         results.get(index).click();
     }
-    @DisplayName("urlTest")
-    @Test
-    public void site(){
-        String input = "Selenium";
-        WebElement searchField = driver.findElement(By.cssSelector("#sb_form_q"));
-        searchField.sendKeys(input);
-        searchField.submit();
-        List<WebElement> links = driver.findElements(By.cssSelector("h2>a[href]"));
-        clickElement(links, 0);
+
+    public void switchToNewTab() {
         ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
         if (tabs.size() > 1) {
             driver.switchTo().window(tabs.get(1));
         }
+    }
+
+    @DisplayName("urlTest")
+    @Test
+    public void site() {
+        String input = "Selenium";
+        WebElement searchField = driver.findElement(searchBotton);
+        searchField.sendKeys(input);
+        searchField.submit();
+        List<WebElement> links = driver.findElements(By.cssSelector("h2>a[href]"));
+        clickElement(links, 0);
+        switchToNewTab();
         String currentUrl = driver.getCurrentUrl();
         assertTrue(currentUrl.contains("https://www.selenium.dev/"), "Ссылка не совпадает");
     }
