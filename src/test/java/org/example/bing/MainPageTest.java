@@ -52,8 +52,10 @@ public class MainPageTest {
         WebElement searchPageField = driver.findElement(searchButton);
         assertEquals(input, searchPageField.getAttribute("value"), "Ошибка, не то слово");
     }
+
     By searchButton = By.cssSelector("#sb_form_q");
-    public void clickElement(List<WebElement> results, int index){
+
+    public void clickElement(List<WebElement> results, int index) {
         if (index >= 0 && index < results.size()) {
             results.get(index).click();
         }
