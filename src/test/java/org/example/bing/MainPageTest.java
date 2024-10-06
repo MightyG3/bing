@@ -34,7 +34,6 @@ public class MainPageTest {
         options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
         driver.manage().window().maximize();
         driver.get("https://www.bing.com");
-
     }
 
     @AfterEach
@@ -54,6 +53,7 @@ public class MainPageTest {
     }
 
     By searchButton = By.cssSelector("#sb_form_q");
+    By seleniumLinkNotAdv = By.cssSelector(":not(.b_adurl) > cite");
 
     public void clickElement(List<WebElement> results, int index) {
         if (index >= 0 && index < results.size()) {
@@ -69,7 +69,7 @@ public class MainPageTest {
     }
 
     @DisplayName("urlTest")
-    @RepeatedTest(5)
+    @RepeatedTest(10)
     public void site() {
         String input = "Selenium";
         WebElement searchField = driver.findElement(searchButton);
@@ -77,10 +77,11 @@ public class MainPageTest {
         searchField.submit();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.and(
-                ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(":not(.b_adurl) > cite"), "selenium.dev"),
-                ExpectedConditions.elementToBeClickable(By.cssSelector(":not(.b_adurl) > cite"))
+                ExpectedConditions.textToBePresentInElementLocated(seleniumLinkNotAdv, "selenium.dev"),
+                ExpectedConditions.elementToBeClickable(seleniumLinkNotAdv)
         ));
-        List<WebElement> results = driver.findElements(By.cssSelector(":not(.b_adurl) > cite"));
+        List<WebElement> results = wait.until(ExpectedConditions.visibilityOfAllElements(
+                driver.findElements(seleniumLinkNotAdv)));
         for (WebElement link : results) {
             System.out.println("Link text: " + link.getText());
         }
