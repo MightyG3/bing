@@ -20,6 +20,7 @@ public class ResultsPage {
     final WebDriverWait wait;
     @FindBy(css = "#sb_form_q")
     private WebElement searchField;
+
     @FindBy(css = ":not(.b_adurl) > cite")
     private List<WebElement> listResultLinks;
 

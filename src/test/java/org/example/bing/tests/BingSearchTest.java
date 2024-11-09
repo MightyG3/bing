@@ -14,6 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BingSearchTest {
     private WebDriver driver;
+    private MainPage mp;
+    private ResultsPage rs;
+    private static final String INPUT = "Selenium";
 
     @BeforeEach
     public void setUp() {
@@ -26,6 +29,8 @@ public class BingSearchTest {
         options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
         driver.manage().window().maximize();
         driver.get("https://www.bing.com");
+        mp = new MainPage(driver);
+        rs = new ResultsPage(driver);
     }
 
     @AfterEach
@@ -35,19 +40,13 @@ public class BingSearchTest {
 
     @RepeatedTest(5)
     public void searchResultTest() {
-        String input = "Selenium";
-        MainPage mp = new MainPage(driver);
-        ResultsPage rs = new ResultsPage(driver);
-        mp.enterSearchText(input);
-        assertEquals(input, rs.getSearchValue(), "Ошибка, не то слово");
+        mp.enterSearchText(INPUT);
+        assertEquals(INPUT, rs.getSearchValue(), "Ошибка, не то слово");
     }
 
     @RepeatedTest(5)
     public void searchFieldTest() {
-        String input = "Selenium";
-        MainPage mp = new MainPage(driver);
-        ResultsPage rs = new ResultsPage(driver);
-        mp.enterSearchText(input);
+        mp.enterSearchText(INPUT);
         rs.waitForResults("selenium.dev");
         rs.printResult();
         rs.clickElement(0);

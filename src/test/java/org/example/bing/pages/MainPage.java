@@ -9,7 +9,6 @@ import org.openqa.selenium.support.PageFactory;
 
 public class MainPage {
 
-
     @FindBy(css = "#sb_form_q")
     private WebElement searchField;
 
